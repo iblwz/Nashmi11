@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>لوحة تحكم موظفي القطاع الصحي - تجمع تبوك الصحي</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        * {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: #f8f9fa;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1.1em;
+            color: #666;
+        }
+
+        .filters {
+            background: #fff;
+            padding: 25px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-group label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .filter-group select {
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .filter-group select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .charts-container {
+            padding: 30px;
+        }
+
+        .chart-section {
+            margin-bottom: 40px;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .chart-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .chart-container {
+            height: 500px;
+            width: 100%;
+        }
+
+        .pie-chart-container {
+            height: 400px;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .filter-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .stats-overview {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 لوحة تحكم موظفي القطاع الصحي</h1>
+            <p>تجمع تبوك الصحي - التحليل الشامل لتوزيع الموظفين</p>
+        </div>
+
+        <div class="stats-overview">
+            <div class="stat-card">
+                <div class="stat-number" style="color: #3498db;">10,703</div>
+                <div class="stat-label">إجمالي الموظفين</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" style="color: #1f77b4;">5,077</div>
+                <div class="stat-label">أطباء</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" style="color: #ff7f0e;">2,528</div>
+                <div class="stat-label">تمريض</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" style="color: #2ca02c;">417</div>
+                <div class="stat-label">صيادلة</div>
+            </div>
+        </div>
+
+        <div class="filters">
+            <div class="filter-group">
+                <label for="workplace-filter">تصفية حسب مكان العمل:</label>
+                <select id="workplace-filter" onchange="updateCharts()">
+                    <option value="all">جميع أماكن العمل</option>
+                    <option value="الملك فهد التخصصي">الملك فهد التخصصي</option>
+                    <option value="الملك خالد العام">الملك خالد العام</option>
+                    <option value="الولادة والأطفال">الولادة والأطفال</option>
+                    <option value="الوجه العام">الوجه العام</option>
+                    <option value="املج العام">املج العام</option>
+                    <option value="ضباء العام">ضباء العام</option>
+                    <option value="ارادة للصحة النفسية">ارادة للصحة النفسية</option>
+                    <option value="تيماء العام">تيماء العام</option>
+                    <option value="حقل العام">حقل العام</option>
+                    <option value="طب الاسنان التخصصي">طب الاسنان التخصصي</option>
+                </select>
+
+                <label for="category-filter">تصفية حسب الفئة المهنية:</label>
+                <select id="category-filter" onchange="updateCharts()">
+                    <option value="all">جميع الفئات</option>
+                    <option value="أطباء">أطباء</option>
+                    <option value="تمريض">تمريض</option>
+                    <option value="صيادلة">صيادلة</option>
+                    <option value="أخرى">أخرى</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="charts-container">
+            <div class="chart-section">
+                <div class="chart-title">📊 توزيع الموظفين حسب مكان العمل والفئة المهنية</div>
+                <div id="bar-chart" class="chart-container"></div>
+            </div>
+
+            <div class="chart-section">
+                <div class="chart-title">🥧 النسب المئوية للفئات المهنية</div>
+                <div id="pie-chart" class="pie-chart-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // البيانات الأساسية
+        const workplaceData = [{"مكان_العمل": "الملك فهد التخصصي", "الفئة_المهنية": "أطباء", "العدد": 1153}, {"مكان_العمل": "الملك فهد التخصصي", "الفئة_المهنية": "تمريض", "العدد": 597}, {"مكان_العمل": "الملك فهد التخصصي", "الفئة_المهنية": "أخرى", "العدد": 494}, {"مكان_العمل": "الملك فهد التخصصي", "الفئة_المهنية": "صيادلة", "العدد": 88}, {"مكان_العمل": "الملك خالد العام", "الفئة_المهنية": "أطباء", "العدد": 918}, {"مكان_العمل": "الملك خالد العام", "الفئة_المهنية": "تمريض", "العدد": 605}, {"مكان_العمل": "الملك خالد العام", "الفئة_المهنية": "أخرى", "العدد": 511}, {"مكان_العمل": "الملك خالد العام", "الفئة_المهنية": "صيادلة", "العدد": 86}, {"مكان_العمل": "الولادة والأطفال", "الفئة_المهنية": "أطباء", "العدد": 633}, {"مكان_العمل": "الولادة والأطفال", "الفئة_المهنية": "تمريض", "العدد": 328}, {"مكان_العمل": "الولادة والأطفال", "الفئة_المهنية": "أخرى", "العدد": 299}, {"مكان_العمل": "الولادة والأطفال", "الفئة_المهنية": "صيادلة", "العدد": 53}, {"مكان_العمل": "الوجه العام", "الفئة_المهنية": "أطباء", "العدد": 306}, {"مكان_العمل": "الوجه العام", "الفئة_المهنية": "أخرى", "العدد": 228}, {"مكان_العمل": "الوجه العام", "الفئة_المهنية": "تمريض", "العدد": 215}, {"مكان_العمل": "الوجه العام", "الفئة_المهنية": "صيادلة", "العدد": 25}, {"مكان_العمل": "املج العام", "الفئة_المهنية": "أطباء", "العدد": 280}, {"مكان_العمل": "املج العام", "الفئة_المهنية": "أخرى", "العدد": 217}, {"مكان_العمل": "املج العام", "الفئة_المهنية": "تمريض", "العدد": 204}, {"مكان_العمل": "املج العام", "الفئة_المهنية": "صيادلة", "العدد": 26}, {"مكان_العمل": "ضباء العام", "الفئة_المهنية": "أطباء", "العدد": 298}, {"مكان_العمل": "ضباء العام", "الفئة_المهنية": "أخرى", "العدد": 125}, {"مكان_العمل": "ضباء العام", "الفئة_المهنية": "تمريض", "العدد": 101}, {"مكان_العمل": "ضباء العام", "الفئة_المهنية": "صيادلة", "العدد": 15}, {"مكان_العمل": "ارادة للصحة النفسية", "الفئة_المهنية": "أطباء", "العدد": 240}, {"مكان_العمل": "ارادة للصحة النفسية", "الفئة_المهنية": "أخرى", "العدد": 142}, {"مكان_العمل": "ارادة للصحة النفسية", "الفئة_المهنية": "تمريض", "العدد": 134}, {"مكان_العمل": "ارادة للصحة النفسية", "الفئة_المهنية": "صيادلة", "العدد": 23}, {"مكان_العمل": "تيماء العام", "الفئة_المهنية": "أطباء", "العدد": 242}, {"مكان_العمل": "تيماء العام", "الفئة_المهنية": "أخرى", "العدد": 158}, {"مكان_العمل": "تيماء العام", "الفئة_المهنية": "تمريض", "العدد": 79}, {"مكان_العمل": "تيماء العام", "الفئة_المهنية": "صيادلة", "العدد": 22}, {"مكان_العمل": "حقل العام", "الفئة_المهنية": "أطباء", "العدد": 214}, {"مكان_العمل": "حقل العام", "الفئة_المهنية": "أخرى", "العدد": 78}, {"مكان_العمل": "حقل العام", "الفئة_المهنية": "تمريض", "العدد": 61}, {"مكان_العمل": "حقل العام", "الفئة_المهنية": "صيادلة", "العدد": 10}, {"مكان_العمل": "طب الاسنان التخصصي", "الفئة_المهنية": "أطباء", "العدد": 206}, {"مكان_العمل": "طب الاسنان التخصصي", "الفئة_المهنية": "أخرى", "العدد": 29}, {"مكان_العمل": "طب الاسنان التخصصي", "الفئة_المهنية": "تمريض", "العدد": 5}, {"مكان_العمل": "طب الاسنان التخصصي", "الفئة_المهنية": "صيادلة", "العدد": 3}];
+        const totalCounts = {"أطباء": 5077, "أخرى": 2681, "تمريض": 2528, "صيادلة": 417};
+        const colors = {"أطباء": "#1f77b4", "تمريض": "#ff7f0e", "صيادلة": "#2ca02c", "أخرى": "#d62728"};
+
+        // إنشاء المخططات
+        function createBarChart(data) {
+            const traces = [];
+            const categories = ['أطباء', 'تمريض', 'صيادلة', 'أخرى'];
+
+            categories.forEach(category => {
+                const categoryData = data.filter(d => d.الفئة_المهنية === category);
+                const x = categoryData.map(d => d.مكان_العمل);
+                const y = categoryData.map(d => d.العدد);
+
+                traces.push({
+                    x: x,
+                    y: y,
+                    name: category,
+                    type: 'bar',
+                    marker: {
+                        color: colors[category]
+                    }
+                });
+            });
+
+            const layout = {
+                title: {
+                    text: 'عدد الموظفين في أكبر 10 أماكن عمل',
+                    font: { size: 18, family: 'Arial' }
+                },
+                xaxis: {
+                    title: 'مكان العمل',
+                    tickangle: -45,
+                    font: { family: 'Arial' }
+                },
+                yaxis: {
+                    title: 'عدد الموظفين',
+                    font: { family: 'Arial' }
+                },
+                barmode: 'group',
+                legend: {
+                    orientation: 'h',
+                    y: -0.2
+                },
+                font: {
+                    family: 'Arial'
+                }
+            };
+
+            Plotly.newPlot('bar-chart', traces, layout, {responsive: true});
+        }
+
+        function createPieChart(data) {
+            const values = Object.values(data);
+            const labels = Object.keys(data);
+            const pieColors = labels.map(label => colors[label]);
+
+            const trace = {
+                values: values,
+                labels: labels,
+                type: 'pie',
+                marker: {
+                    colors: pieColors
+                },
+                textinfo: 'label+percent+value',
+                textfont: {
+                    family: 'Arial',
+                    size: 14
+                },
+                hole: 0.3
+            };
+
+            const layout = {
+                title: {
+                    text: 'التوزيع النسبي للفئات المهنية',
+                    font: { size: 18, family: 'Arial' }
+                },
+                font: {
+                    family: 'Arial'
+                }
+            };
+
+            Plotly.newPlot('pie-chart', [trace], layout, {responsive: true});
+        }
+
+        function updateCharts() {
+            const workplaceFilter = document.getElementById('workplace-filter').value;
+            const categoryFilter = document.getElementById('category-filter').value;
+
+            let filteredData = workplaceData;
+            let filteredTotalCounts = {...totalCounts};
+
+            // تطبيق فلتر مكان العمل
+            if (workplaceFilter !== 'all') {
+                filteredData = filteredData.filter(d => d.مكان_العمل === workplaceFilter);
+
+                // إعادة حساب الإجماليات للمخطط الدائري
+                filteredTotalCounts = {};
+                filteredData.forEach(d => {
+                    if (filteredTotalCounts[d.الفئة_المهنية]) {
+                        filteredTotalCounts[d.الفئة_المهنية] += d.العدد;
+                    } else {
+                        filteredTotalCounts[d.الفئة_المهنية] = d.العدد;
+                    }
+                });
+            }
+
+            // تطبيق فلتر الفئة المهنية
+            if (categoryFilter !== 'all') {
+                filteredData = filteredData.filter(d => d.الفئة_المهنية === categoryFilter);
+
+                // تحديث الإجماليات للمخطط الدائري
+                const categoryTotal = filteredTotalCounts[categoryFilter] || 0;
+                filteredTotalCounts = {};
+                filteredTotalCounts[categoryFilter] = categoryTotal;
+            }
+
+            createBarChart(filteredData);
+            createPieChart(filteredTotalCounts);
+        }
+
+        // تهيئة المخططات عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCharts();
+        });
+    </script>
+</body>
+</html>

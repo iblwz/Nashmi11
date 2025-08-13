@@ -1,0 +1,74 @@
+{
+  "summary_statistics": {
+    "total_employees": 10703,
+    "doctors": 5077,
+    "nurses": 2528,
+    "pharmacists": 417,
+    "others": 2681
+  },
+  "percentages": {
+    "doctors_pct": 47.4,
+    "nurses_pct": 23.6,
+    "pharmacists_pct": 3.9,
+    "others_pct": 25.0
+  },
+  "data_quality": {
+    "original_missing_data": 2,
+    "missing_data_percentage": 0.0,
+    "total_workplaces": 38,
+    "classified_workplaces": 37,
+    "unclassified_workplaces": 16
+  },
+  "top_workplaces": [
+    {
+      "name": "الملك فهد التخصصي",
+      "total_employees": 2332,
+      "percentage": 21.8
+    },
+    {
+      "name": "الملك خالد العام",
+      "total_employees": 2120,
+      "percentage": 19.8
+    },
+    {
+      "name": "الولادة والأطفال",
+      "total_employees": 1313,
+      "percentage": 12.3
+    },
+    {
+      "name": "الوجه العام",
+      "total_employees": 774,
+      "percentage": 7.2
+    },
+    {
+      "name": "املج العام",
+      "total_employees": 727,
+      "percentage": 6.8
+    },
+    {
+      "name": "ضباء العام",
+      "total_employees": 539,
+      "percentage": 5.0
+    },
+    {
+      "name": "ارادة للصحة النفسية",
+      "total_employees": 539,
+      "percentage": 5.0
+    },
+    {
+      "name": "تيماء العام",
+      "total_employees": 501,
+      "percentage": 4.7
+    },
+    {
+      "name": "حقل العام",
+      "total_employees": 363,
+      "percentage": 3.4
+    },
+    {
+      "name": "طب الاسنان التخصصي",
+      "total_employees": 243,
+      "percentage": 2.3
+    }
+  ]
+}
